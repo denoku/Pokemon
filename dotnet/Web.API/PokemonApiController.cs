@@ -31,13 +31,41 @@ namespace Sabio.Web.Api.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult<ItemResponse<Paged<Pokemon>>> GetPaginated(int pageIndex, int pageSize)
+        public ActionResult<ItemResponse<Paged<Pokemon>>> GetPaginated(int pageIndex, int pageSize,int sortId)
         {
             ActionResult result = null;
 
             try
             {
-                Paged<Pokemon> page = _pService.GetPaginated(pageIndex, pageSize);
+                Paged<Pokemon> page = _pService.GetPaginated(pageIndex, pageSize, sortId);
+
+                if (page == null)
+                {
+                    result = NotFound404(new ErrorResponse("Records Not Found"));
+                }
+                else
+                {
+                    ItemResponse<Paged<Pokemon>> response = new ItemResponse<Paged<Pokemon>>();
+                    response.Item = page;
+                    result = Ok200(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+                result = StatusCode(500, new ErrorResponse(ex.Message.ToString()));
+            }
+            return result;
+        }
+        [HttpGet("search")]
+        [AllowAnonymous]
+        public ActionResult<ItemResponse<Paged<Pokemon>>> SearchPaginated(int pageIndex, int pageSize, string query)
+        {
+            ActionResult result = null;
+
+            try
+            {
+                Paged<Pokemon> page = _pService.SearchPaginated(pageIndex, pageSize, query);
 
                 if (page == null)
                 {
@@ -66,6 +94,36 @@ namespace Sabio.Web.Api.Controllers
 
             try
             {
+                Pokemon pokemon = _pService.GetPokemonById(id);
+                if (pokemon == null)
+                {
+                    result = NotFound404(new ErrorResponse("Pokemon Not Found"));
+                }
+                else
+                {
+                    ItemResponse<Pokemon> response = new ItemResponse<Pokemon>();
+                    response.Item = pokemon;
+                    result = Ok200(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+                result = StatusCode(500, new ErrorResponse(ex.Message.ToString()));
+            }
+            return result;
+        }
+
+        [HttpGet("random")]
+        [AllowAnonymous]
+        public ActionResult<ItemResponse<Pokemon>> GetRandomPokemon()
+        {
+            ActionResult result = null;
+
+            try
+            {
+                Random rnd= new Random();
+                int id = rnd.Next(1, 17);
                 Pokemon pokemon = _pService.GetPokemonById(id);
                 if (pokemon == null)
                 {

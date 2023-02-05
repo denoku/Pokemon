@@ -7,14 +7,14 @@ import { useNavigate } from "react-router-dom";
 const _logger = logger.extend('RenderPokemon');
 
 const SinglePokemon = (props) => {
-    _logger('RenderPokemon', props)
+    // _logger('RenderPokemon', props)
 
     const pokeData = props.pokeData
     const navigate = useNavigate();
 
     const mapTypes = (type) => {
         const pType = type.name;
-        _logger('pType', pType)
+        // _logger('pType', pType)
         if (pType === "Grass") {
             return (
                 <span className="pokeType grass">{pType}</span>
@@ -48,6 +48,16 @@ const SinglePokemon = (props) => {
         else if (pType === "Normal") {
             return (
                 <span className="pokeType normal">{pType}</span>
+            )
+        }
+        else if (pType === "Electric") {
+            return (
+                <span className="pokeType electric">{pType}</span>
+            )
+        }
+        else if (pType === "Ground") {
+            return (
+                <span className="pokeType ground">{pType}</span>
             )
         }
         else

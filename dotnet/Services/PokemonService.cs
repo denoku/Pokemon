@@ -25,7 +25,7 @@ namespace Sabio.Services
             _lookUpService = lookUpService;
         }
 
-        public Paged<Pokemon> GetPaginated(int pageIndex, int pageSize)
+        public Paged<Pokemon> GetPaginated(int pageIndex, int pageSize, int sortId)
         {
             Paged<Pokemon> pagedList = null;
             List<Pokemon> list = null;
@@ -35,6 +35,7 @@ namespace Sabio.Services
             {
                 param.AddWithValue("@PageIndex", pageIndex);
                 param.AddWithValue("@PageSize", pageSize);
+                param.AddWithValue("@SortId", sortId);
 
             }, delegate (IDataReader reader, short set)
             {
@@ -58,6 +59,39 @@ namespace Sabio.Services
             return pagedList;
         }
 
+        public Paged<Pokemon> SearchPaginated(int pageIndex, int pageSize, string query)
+        {
+            Paged<Pokemon> pagedList = null;
+            List<Pokemon> list = null;
+            int total = 0;
+
+            _data.ExecuteCmd("[dbo].[Pokemon_Search_Pagination]", delegate (SqlParameterCollection param)
+            {
+                param.AddWithValue("@PageIndex", pageIndex);
+                param.AddWithValue("@PageSize", pageSize);
+                param.AddWithValue("@Query", query);
+
+            }, delegate (IDataReader reader, short set)
+            {
+                int startingIndex = 0;
+                Pokemon pokemon = MapSinglePokemon(reader, ref startingIndex);
+
+                if (total == 0)
+                {
+                    total = reader.GetSafeInt32(startingIndex++);
+                }
+                if (list == null)
+                {
+                    list = new List<Pokemon>();
+                }
+                list.Add(pokemon);
+            });
+            if (list != null)
+            {
+                pagedList = new Paged<Pokemon>(list, pageIndex, pageSize, total);
+            }
+            return pagedList;
+        }
         public Pokemon GetPokemonById(int id)
         {
             Pokemon pokemon = null;

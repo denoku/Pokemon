@@ -66,7 +66,8 @@ const IndividualPokemon = () => {
     const getPrevPokemonError = (data) => {
         _logger('getPrevPokemonError', data)
     }
-    const showMoreInfo = () => {
+    const showMoreInfo = (evt) => {
+        _logger("event", evt.target)
         setShow(!show)
     }
 
@@ -139,9 +140,31 @@ const IndividualPokemon = () => {
 
     }
 
+    const mapAbilities = (ability) => {
+
+        return (
+            <span className="attribute-value more-info" onClick={showMoreInfo}>{ability.name}</span>
+
+        )
+    }
+
+    const mapAbilityInfo = (abilityInfo) => {
+
+        return (
+            <>
+                <h3 className="ability-name">{abilityInfo.name}</h3>
+                <p className="ability-description">{abilityInfo.description}</p>
+            </>
+
+        )
+    }
+
     const types = pokeInfo.types.map(mapTypes);
 
     const weaknesses = pokeInfo.weaknesses.map(mapTypes);
+
+    const abilities = pokeInfo.abilities.map(mapAbilities);
+    const abilityInfo = pokeInfo.abilities.map(mapAbilityInfo);
 
     const sendNextPokemon = () => {
         const state = { type: 'Next_Pokemon', payload: pokemon.pokeData };
@@ -228,13 +251,7 @@ const IndividualPokemon = () => {
                                         </li>
                                         <li>
                                             <span className="attribute-title">Abilities</span>
-
-
-
-                                            <span className="attribute-value more-info" onClick={showMoreInfo}>{pokeInfo.abilities.map(ability => ability.name)}</span>
-
-
-
+                                            {abilities}
                                         </li>
                                     </ul>
                                 </div>
@@ -246,8 +263,9 @@ const IndividualPokemon = () => {
                                                 Close
                                             </span>
                                             <span className="ability-title">Ability Info</span>
-                                            <h3 className="ability-name">{pokeInfo.abilities.map(ability => ability.name)}</h3>
-                                            <p className="ability-description">{pokeInfo.abilities.map(ability => ability.description)}</p>
+                                            {abilityInfo}
+                                            {/* <h3 className="ability-name">{pokeInfo.abilities.map(ability => ability.name)}</h3>
+                                            <p className="ability-description">{pokeInfo.abilities.map(ability => ability.description)}</p> */}
                                         </div>
                                     )}
                             </div>
